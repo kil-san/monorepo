@@ -1,0 +1,32 @@
+syntax = "proto3";
+package micro.serv.note;
+
+option go_package = "github.com/kil-san/micro-serv/note-service/pb";
+import "google/protobuf/empty.proto";
+
+service NoteRPC {
+    rpc CreateNote (Note) returns (Note);
+    rpc GetNotes (OwnerUid) returns (NoteList);
+    rpc GetNote (SingleNote) returns (Note);
+    rpc UpdateNote (Note) returns (google.protobuf.Empty);
+    rpc DeleteNote (SingleNote) returns (google.protobuf.Empty);
+}
+
+message OwnerUid {
+    string user_id = 1;
+}
+
+message SingleNote {
+    string user_id = 1;
+    string note_id = 2;
+}
+
+message NoteList {
+    repeated Note notes = 1;
+}
+
+message Note {
+    string id = 1;
+	string title = 2;
+	string status = 3;
+}
