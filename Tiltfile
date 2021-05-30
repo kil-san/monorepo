@@ -19,25 +19,47 @@ for service in [
   'gateway-service',
   'note-service'
 ]:
-  k8s_yaml('k8s/service/' + service + '-deployment.yaml')
-  docker_build_with_restart(
-    ref=service + ':latest',
-    entrypoint='/go/bin/' + service,
-    build_args={'ServiceRelativePath': './services'},
-    context='.',
-    dockerfile='services/' + service + '/Dockerfile',
-    live_update=
-      [
-        sync('services/' + service , '/dev/null')
-      ]
+  pwd = os.getcwd()
+  deployment = local("bazel run --define service={service} --define pwd={pwd} :%s".format(
+    service=service,
+    pwd=pwd,
+  ) % service)
+
+  k8s_yaml(deployment)
+  target = "//services/{}:image".format(service)
+  dest = target.replace('//', 'bazel/')
+  base_cmd = "bazel run --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64"
+  cmd = "{cmd} {target} -- --norun && docker tag {dest} $EXPECTED_REF".format(
+    cmd=base_cmd,
+    target=target,
+    dest=dest
+  )
+  custom_build(
+    service + '-image',
+    command=cmd,
+    deps=['services/' + service]
   )
 
-for service, port in [
-  ['gateway-service', '50001:8000'],
-  ['note-service', '50002:8008']
+
+for service, port, deps in [
+  ['gateway-service', '50001:8000', ['build: buf', 'build: graphql']],
+  ['note-service', '50002:8008', ['build: buf', 'run svc: db']]
 ]:
   k8s_resource(
     service,
     new_name=service,
     port_forwards=port,
+    resource_deps=deps
   )
+
+local_resource(
+  'build: buf',
+  cmd='cd services',
+  deps=['services/**/*.proto'],
+)
+
+local_resource(
+  'build: graphql',
+  cmd='cd services/gateway-service && go run github.com/99designs/gqlgen',
+  deps=['services/**/*.graphqls'],
+)

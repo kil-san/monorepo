@@ -23,7 +23,7 @@ spec:
         app: note-service
     spec:
       containers:
-        - image: note-service:latest
+        - image: note-service-image:latest
           name: note-service
           env:
             - name: DB_HOST

@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle")
+
+# gazelle:prefix github.com/kil-san/micro-serv/note-service
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/kil-san/micro-serv/note-service",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/note-service/connection:go_default_library",
+        "//services/note-service/pb:go_default_library",
+        "//services/note-service/rpc:go_default_library",
+        "//services/pkg/model:go_default_library",
+        "@dev_unknwon_clog_v2//:go_default_library",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "note-service",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

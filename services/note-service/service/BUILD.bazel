@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["note_service.go"],
+    importpath = "github.com/kil-san/micro-serv/note-service/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/note-service/repo:go_default_library",
+        "//services/pkg/model:go_default_library",
+    ],
+)

@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["sqldb_connection.go"],
+    importpath = "github.com/kil-san/micro-serv/note-service/connection",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/pkg/model:go_default_library",
+        "@com_github_go_sql_driver_mysql//:go_default_library",
+    ],
+)

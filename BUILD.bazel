@@ -1,0 +1,32 @@
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+k8s_object(
+    name = "gateway-service",
+    kind = "deployment",
+    template = ":k8s/service/gateway-service-deployment.yaml",
+    cluster = "k3s-dev-cluster",
+    substitutions = {
+        "%{service}": "$(service)",
+        "%{repo_dir_absolute}": "$(pwd)",
+    },
+)
+
+k8s_object(
+    name = "note-service",
+    kind = "deployment",
+    template = ":k8s/service/note-service-deployment.yaml",
+    cluster = "k3s-dev-cluster",
+    substitutions = {
+        "%{service}": "$(service)",
+        "%{repo_dir_absolute}": "$(pwd)",
+    },
+)
+
+# gazelle:prefix __do_not_match__
+# gazelle:proto disable
+# gazelle:exclude microservices
+# gazelle:exclude frontends
+gazelle(
+    name = "gazelle",
+)

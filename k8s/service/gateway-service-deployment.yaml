@@ -23,7 +23,7 @@ spec:
         app: gateway-service
     spec:
       containers:
-        - image: gateway-service:latest
+        - image: gateway-service-image:latest
           name: gateway-service
           env:
             - name: NOTE_SERVICE_ENDPOINT

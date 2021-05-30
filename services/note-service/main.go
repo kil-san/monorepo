@@ -10,7 +10,6 @@ import (
 	"github.com/kil-san/micro-serv/note-service/rpc"
 	"github.com/kil-san/micro-serv/pkg/model"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	log "unknwon.dev/clog/v2"
 )
@@ -40,7 +39,6 @@ func main() {
 	defer db.Close()
 
 	s := grpc.NewServer()
-	reflection.Register(s)
 	pb.RegisterNoteRPCServer(s, rpc.New(db))
 
 	log.Info("Serving gRPC on https://%s", addr)

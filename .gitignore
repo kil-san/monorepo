@@ -1,3 +1,5 @@
 *.db
 .helm
 tilt_modules
+*pb.go
+bazel**

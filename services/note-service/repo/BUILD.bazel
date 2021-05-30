@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "repo.go",
+        "sql_repo.go",
+    ],
+    importpath = "github.com/kil-san/micro-serv/note-service/repo",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/pkg/model:go_default_library",
+        "@com_github_go_sql_driver_mysql//:go_default_library",
+    ],
+)

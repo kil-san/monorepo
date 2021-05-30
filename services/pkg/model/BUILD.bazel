@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+# gazelle:prefix github.com/kil-san/micro-serv/pkg/model
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "db.go",
+        "todo.go",
+    ],
+    importpath = "github.com/kil-san/micro-serv/pkg/model",
+    visibility = ["//visibility:public"],
+)
