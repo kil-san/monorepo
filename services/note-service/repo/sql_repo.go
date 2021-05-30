@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"strconv"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/kil-san/micro-serv/pkg/model"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type SqlRepo struct {

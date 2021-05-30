@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"os"
 
 	"github.com/kil-san/micro-serv/gateway-service/graph/model"
 	"github.com/kil-san/micro-serv/note-service/pb"
@@ -18,7 +19,7 @@ type NoteService interface {
 	DeleteNote(ctx context.Context, id string) error
 }
 
-var NoteRPCEndpoint = "127.0.0.1:8008"
+var NoteRPCEndpoint = os.Getenv("NOTE_SERVICE_ENDPOINT")
 
 func NewNoteService(client pb.NoteRPCClient) NoteService {
 	s := &noteService{

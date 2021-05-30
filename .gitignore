@@ -1,0 +1,3 @@
+*.db
+.helm
+tilt_modules
