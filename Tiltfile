@@ -12,8 +12,13 @@ helm_remote('phpmyadmin',
   set=["db.host=db", "db.port=3306"],
 )
 
-k8s_resource('db', new_name='run svc: db', port_forwards='30000:3306')
-k8s_resource('dev-release-phpmyadmin', new_name='run svc: phpMyAdmin', port_forwards='3308:8080')
+k8s_resource('db', new_name='run side: db', port_forwards='30000:3306')
+k8s_resource(
+  'dev-release-phpmyadmin',
+  new_name='run side: phpMyAdmin',
+  port_forwards='3308:8080',
+  resource_deps=['run side: db']
+)
 
 for service in [
   'gateway-service',
@@ -43,11 +48,11 @@ for service in [
 
 for service, port, deps in [
   ['gateway-service', '50001:8000', ['build: buf', 'build: graphql']],
-  ['note-service', '50002:8008', ['build: buf', 'run svc: db']]
+  ['note-service', '50002:8008', ['build: buf', 'run side: db']]
 ]:
   k8s_resource(
     service,
-    new_name=service,
+    new_name="run svc: " + service,
     port_forwards=port,
     resource_deps=deps
   )
