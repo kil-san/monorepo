@@ -3,8 +3,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
-        "service.pb.go",
-        "service_grpc.pb.go",
+        "note_service.pb.go",
+        "note_service_grpc.pb.go",
     ],
     importpath = "github.com/kil-san/micro-serv/note-service/pb",
     visibility = ["//visibility:public"],

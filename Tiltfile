@@ -54,7 +54,7 @@ for service, port, deps in [
 
 local_resource(
   'build: buf',
-  cmd='cd services',
+  cmd='./protoc_gen.sh',
   deps=['services/**/*.proto'],
 )
 
