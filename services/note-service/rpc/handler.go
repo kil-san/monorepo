@@ -2,31 +2,30 @@ package rpc
 
 import (
 	"context"
-	"database/sql"
+	"os"
 
+	"github.com/kil-san/micro-serv/note-service/connection"
 	"github.com/kil-san/micro-serv/note-service/pb"
 	"github.com/kil-san/micro-serv/note-service/repo"
 	"github.com/kil-san/micro-serv/note-service/service"
 	"github.com/kil-san/micro-serv/pkg/model"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/types/known/emptypb"
 	log "unknwon.dev/clog/v2"
 )
 
 type noteRPCServer struct {
 	pb.UnimplementedNoteRPCServer
-	db *sql.DB
 }
 
-func New(db *sql.DB) pb.NoteRPCServer {
-	s := &noteRPCServer{
-		db: db,
-	}
+func New() pb.NoteRPCServer {
+	s := &noteRPCServer{}
 	return s
 }
 
-func GetService(db *sql.DB) *service.NoteService {
-	repo := repo.NewSqlRepo(db)
-	svc := service.NewNoteService(repo)
+func GetService(client *mongo.Client) *service.NoteService {
+	mongoRepo := repo.NewMongoRepo(client)
+	svc := service.NewNoteService(mongoRepo)
 
 	return svc
 }
@@ -34,7 +33,13 @@ func GetService(db *sql.DB) *service.NoteService {
 func (s *noteRPCServer) CreateNote(ctx context.Context, req *pb.Note) (*pb.Note, error) {
 	var res pb.Note
 
-	svc := GetService(s.db)
+	ctx, client, err := connection.NewMongoConnection(ctx, os.Getenv("MONGO_DB_HOST"), os.Getenv("MONGO_DB_PORT"))
+	if err != nil {
+		log.Fatal("could not open connection to db: %+v", err)
+	}
+	defer client.Disconnect(ctx)
+
+	svc := GetService(client)
 	note, err := svc.CreateNote(ctx, model.Note{
 		Title:  req.Title,
 		Status: req.Status,
@@ -58,7 +63,13 @@ func (s *noteRPCServer) GetNotes(ctx context.Context, req *pb.OwnerUid) (*pb.Not
 func (s *noteRPCServer) GetNote(ctx context.Context, req *pb.SingleNote) (*pb.Note, error) {
 	var res pb.Note
 
-	svc := GetService(s.db)
+	ctx, client, err := connection.NewMongoConnection(ctx, os.Getenv("MONGO_DB_HOST"), os.Getenv("MONGO_DB_PORT"))
+	if err != nil {
+		log.Fatal("could not open connection to db: %+v", err)
+	}
+	defer client.Disconnect(ctx)
+
+	svc := GetService(client)
 	note, err := svc.GetNote(ctx, req.NoteId)
 	if err != nil {
 		log.Error("%+v", err)
@@ -75,8 +86,15 @@ func (s *noteRPCServer) GetNote(ctx context.Context, req *pb.SingleNote) (*pb.No
 func (s *noteRPCServer) UpdateNote(ctx context.Context, req *pb.Note) (*emptypb.Empty, error) {
 	var res emptypb.Empty
 
-	svc := GetService(s.db)
-	err := svc.UpdateNote(ctx, req.Id, model.Note{
+	ctx, client, err := connection.NewMongoConnection(ctx, os.Getenv("MONGO_DB_HOST"), os.Getenv("MONGO_DB_PORT"))
+	if err != nil {
+		log.Fatal("could not open connection to db: %+v", err)
+	}
+	defer client.Disconnect(ctx)
+
+	svc := GetService(client)
+	err = svc.UpdateNote(ctx, req.Id, model.Note{
+		Id:     req.Id,
 		Title:  req.Title,
 		Status: req.Status,
 	})
@@ -91,8 +109,14 @@ func (s *noteRPCServer) UpdateNote(ctx context.Context, req *pb.Note) (*emptypb.
 func (s *noteRPCServer) DeleteNote(ctx context.Context, req *pb.SingleNote) (*emptypb.Empty, error) {
 	var res emptypb.Empty
 
-	svc := GetService(s.db)
-	err := svc.DeleteNote(ctx, req.NoteId)
+	ctx, client, err := connection.NewMongoConnection(ctx, os.Getenv("MONGO_DB_HOST"), os.Getenv("MONGO_DB_PORT"))
+	if err != nil {
+		log.Fatal("could not open connection to db: %+v", err)
+	}
+	defer client.Disconnect(ctx)
+
+	svc := GetService(client)
+	err = svc.DeleteNote(ctx, req.NoteId)
 	if err != nil {
 		log.Error("%+v", err)
 		return &res, err

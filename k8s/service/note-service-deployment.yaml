@@ -36,3 +36,9 @@ spec:
               value: serv
             - name: DB_NAME
               value: micro_serv
+            - name: MONGO_DB_HOST
+              value: dev-release-mongodb
+            - name: MONGO_DB_PORT
+              value: "27017"
+            - name: DATABASE
+              value: monorepodb

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/kil-san/micro-serv/note-service/repo"
 	"github.com/kil-san/micro-serv/pkg/model"
 )
@@ -19,6 +20,7 @@ func NewNoteService(repo repo.Repo) *NoteService {
 
 func (s *NoteService) CreateNote(ctx context.Context, note model.Note) (model.Note, error) {
 	var newNote model.Note
+	note.Id = uuid.New().String()
 	newNote, err := s.repo.Create(ctx, note)
 	if err != nil {
 		return newNote, err

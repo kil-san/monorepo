@@ -3,12 +3,9 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
 
-	"github.com/kil-san/micro-serv/note-service/connection"
 	"github.com/kil-san/micro-serv/note-service/pb"
 	"github.com/kil-san/micro-serv/note-service/rpc"
-	"github.com/kil-san/micro-serv/pkg/model"
 	"google.golang.org/grpc"
 
 	log "unknwon.dev/clog/v2"
@@ -26,20 +23,8 @@ func main() {
 		log.Fatal("Failed to listen: %+v", err)
 	}
 
-	db, err := connection.NewSqlDbConnection(model.DbConfig{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		DbName:   os.Getenv("DB_NAME"),
-	})
-	if err != nil {
-		log.Fatal("could not open connection to db: %+v", err)
-	}
-	defer db.Close()
-
 	s := grpc.NewServer()
-	pb.RegisterNoteRPCServer(s, rpc.New(db))
+	pb.RegisterNoteRPCServer(s, rpc.New())
 
 	log.Info("Serving gRPC on https://%s", addr)
 	log.Fatal("Failed to serve: %+v", s.Serve(lis))

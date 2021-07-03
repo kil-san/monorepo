@@ -20,17 +20,5 @@ func NewSqlDbConnection(config model.DbConfig) (*sql.DB, error) {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
-	createNoteTableSQL := `CREATE TABLE IF NOT EXISTS note (
-		id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,		
-		title TEXT,
-		status TEXT
-	  );`
-
-	stmt, err := db.Prepare(createNoteTableSQL)
-	if err != nil {
-		return nil, err
-	}
-	stmt.Exec()
-
 	return db, nil
 }

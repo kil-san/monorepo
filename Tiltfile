@@ -3,21 +3,35 @@ load('ext://helm_remote', 'helm_remote')
 
 default_registry('localhost:56406')
 
-k8s_yaml('k8s/mysql-deployment.yaml')
-helm_remote('phpmyadmin',
-  repo_name="bitnami",
+# k8s_yaml('k8s/mysql-deployment.yaml')
+# helm_remote('phpmyadmin',
+#   repo_name="bitnami",
+#   repo_url="https://charts.bitnami.com/bitnami",
+#   release_name="dev-release",
+#   namespace="kube-system",
+#   set=["db.host=db", "db.port=3306"],
+# )
+helm_remote('mongodb',
+  repo_name="mongodb",
   repo_url="https://charts.bitnami.com/bitnami",
   release_name="dev-release",
   namespace="kube-system",
-  set=["db.host=db", "db.port=3306"],
+  set=[
+    "auth.enabled=false"
+  ],
 )
 
-k8s_resource('db', new_name='run side: db', port_forwards='30000:3306')
+# k8s_resource('db', new_name='run side: db', port_forwards='30000:3306')
+# k8s_resource(
+#   'dev-release-phpmyadmin',
+#   new_name='run side: phpMyAdmin',
+#   port_forwards='3308:8080',
+#   resource_deps=['run side: db']
+# )
 k8s_resource(
-  'dev-release-phpmyadmin',
-  new_name='run side: phpMyAdmin',
-  port_forwards='3308:8080',
-  resource_deps=['run side: db']
+  'dev-release-mongodb',
+  new_name='run side: mongoDB',
+  port_forwards='27000:27017',
 )
 
 for service in [
@@ -48,7 +62,7 @@ for service in [
 
 for service, port, deps in [
   ['gateway-service', '50001:8000', ['build: buf', 'build: graphql']],
-  ['note-service', '50002:8008', ['build: buf', 'run side: db']]
+  ['note-service', '50002:8008', ['build: buf', 'run side: mongoDB']]
 ]:
   k8s_resource(
     service,
