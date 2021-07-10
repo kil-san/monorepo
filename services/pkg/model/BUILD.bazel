@@ -6,7 +6,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "db.go",
-        "todo.go",
+        "note.go",
     ],
     importpath = "github.com/kil-san/micro-serv/pkg/model",
     visibility = ["//visibility:public"],

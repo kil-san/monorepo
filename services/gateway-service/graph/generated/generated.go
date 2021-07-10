@@ -50,14 +50,14 @@ type ComplexityRoot struct {
 	}
 
 	Note struct {
-		ID     func(childComplexity int) int
-		Status func(childComplexity int) int
-		Title  func(childComplexity int) int
+		Content func(childComplexity int) int
+		ID      func(childComplexity int) int
+		Title   func(childComplexity int) int
 	}
 
 	Query struct {
 		GetNote  func(childComplexity int, data string) int
-		GetNotes func(childComplexity int) int
+		GetNotes func(childComplexity int, data string) int
 	}
 }
 
@@ -67,7 +67,7 @@ type MutationResolver interface {
 	DeleteNote(ctx context.Context, data string) (bool, error)
 }
 type QueryResolver interface {
-	GetNotes(ctx context.Context) ([]*model.Note, error)
+	GetNotes(ctx context.Context, data string) ([]*model.Note, error)
 	GetNote(ctx context.Context, data string) (*model.Note, error)
 }
 
@@ -122,19 +122,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateNote(childComplexity, args["data"].(model.NoteUpdate)), true
 
+	case "Note.content":
+		if e.complexity.Note.Content == nil {
+			break
+		}
+
+		return e.complexity.Note.Content(childComplexity), true
+
 	case "Note.id":
 		if e.complexity.Note.ID == nil {
 			break
 		}
 
 		return e.complexity.Note.ID(childComplexity), true
-
-	case "Note.status":
-		if e.complexity.Note.Status == nil {
-			break
-		}
-
-		return e.complexity.Note.Status(childComplexity), true
 
 	case "Note.title":
 		if e.complexity.Note.Title == nil {
@@ -160,7 +160,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.GetNotes(childComplexity), true
+		args, err := ec.field_Query_getNotes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetNotes(childComplexity, args["data"].(string)), true
 
 	}
 	return 0, false
@@ -231,7 +236,7 @@ var sources = []*ast.Source{
 # https://gqlgen.com/getting-started/
 
 type Query {
-  getNotes: [Note!]!
+  getNotes(data: String!): [Note!]!
   getNote(data: String!): Note!
 }
 
@@ -244,17 +249,18 @@ type Mutation {
 type Note {
   id: String!
   title: String!
-  status: String!
+  content: String!
 }
 
 input NoteUpdate {
   id: String!
   title: String!
-  status: String!
+  content: String!
 }
 
 input NewNote {
   title: String!
+  content: String!
 }
 `, BuiltIn: false},
 }
@@ -325,6 +331,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 }
 
 func (ec *executionContext) field_Query_getNote_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["data"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["data"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getNotes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -573,7 +594,7 @@ func (ec *executionContext) _Note_title(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Note_status(ctx context.Context, field graphql.CollectedField, obj *model.Note) (ret graphql.Marshaler) {
+func (ec *executionContext) _Note_content(ctx context.Context, field graphql.CollectedField, obj *model.Note) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -591,7 +612,7 @@ func (ec *executionContext) _Note_status(ctx context.Context, field graphql.Coll
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Status, nil
+		return obj.Content, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -624,9 +645,16 @@ func (ec *executionContext) _Query_getNotes(ctx context.Context, field graphql.C
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getNotes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetNotes(rctx)
+		return ec.resolvers.Query().GetNotes(rctx, args["data"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1857,6 +1885,14 @@ func (ec *executionContext) unmarshalInputNewNote(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
+		case "content":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			it.Content, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -1885,11 +1921,11 @@ func (ec *executionContext) unmarshalInputNoteUpdate(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
-		case "status":
+		case "content":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			it.Content, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1969,8 +2005,8 @@ func (ec *executionContext) _Note(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "status":
-			out.Values[i] = ec._Note_status(ctx, field, obj)
+		case "content":
+			out.Values[i] = ec._Note_content(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

@@ -52,3 +52,9 @@ func (s *NoteService) DeleteNote(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+func (s *NoteService) GetNotes(ctx context.Context, id string) ([]model.Note, error) {
+	var notes []model.Note
+
+	return notes, nil
+}

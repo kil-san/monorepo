@@ -41,8 +41,8 @@ func (s *noteRPCServer) CreateNote(ctx context.Context, req *pb.Note) (*pb.Note,
 
 	svc := GetService(client)
 	note, err := svc.CreateNote(ctx, model.Note{
-		Title:  req.Title,
-		Status: req.Status,
+		Title:   req.Title,
+		Content: req.Content,
 	})
 	if err != nil {
 		log.Error("%+v", err)
@@ -51,13 +51,37 @@ func (s *noteRPCServer) CreateNote(ctx context.Context, req *pb.Note) (*pb.Note,
 
 	res.Id = note.Id
 	res.Title = note.Title
-	res.Status = note.Status
+	res.Content = note.Content
 
 	return &res, nil
 }
 
 func (s *noteRPCServer) GetNotes(ctx context.Context, req *pb.OwnerUid) (*pb.NoteList, error) {
-	return &pb.NoteList{}, nil
+	var res pb.NoteList
+
+	ctx, client, err := connection.NewMongoConnection(ctx, os.Getenv("MONGO_DB_HOST"), os.Getenv("MONGO_DB_PORT"))
+	if err != nil {
+		log.Fatal("could not open connection to db: %+v", err)
+	}
+	defer client.Disconnect(ctx)
+
+	svc := GetService(client)
+	notes, err := svc.GetNotes(ctx, req.UserId)
+	if err != nil {
+		log.Error("%+v", err)
+		return &res, err
+	}
+
+	res.Notes = make([]*pb.Note, len(notes))
+	for i, note := range notes {
+		res.Notes[i] = &pb.Note{
+			Id:      note.Id,
+			Title:   note.Title,
+			Content: note.Content,
+		}
+	}
+
+	return &res, nil
 }
 
 func (s *noteRPCServer) GetNote(ctx context.Context, req *pb.SingleNote) (*pb.Note, error) {
@@ -78,7 +102,7 @@ func (s *noteRPCServer) GetNote(ctx context.Context, req *pb.SingleNote) (*pb.No
 
 	res.Id = note.Id
 	res.Title = note.Title
-	res.Status = note.Status
+	res.Content = note.Content
 
 	return &res, nil
 }
@@ -94,9 +118,9 @@ func (s *noteRPCServer) UpdateNote(ctx context.Context, req *pb.Note) (*emptypb.
 
 	svc := GetService(client)
 	err = svc.UpdateNote(ctx, req.Id, model.Note{
-		Id:     req.Id,
-		Title:  req.Title,
-		Status: req.Status,
+		Id:      req.Id,
+		Title:   req.Title,
+		Content: req.Content,
 	})
 	if err != nil {
 		log.Error("%+v", err)

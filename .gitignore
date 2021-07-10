@@ -3,3 +3,4 @@
 tilt_modules
 *pb.go
 bazel**
+credentials/*.json

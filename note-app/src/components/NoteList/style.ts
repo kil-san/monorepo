@@ -19,11 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: props.drawerWidth,
     }),
     // necessary for content to be below app bar
-    toolbar: {
-      ...theme.mixins.toolbar,
-      height: 0,
-      minHeight: '0px' + ' !important'
-    },
+    toolbar: theme.mixins.toolbar,
     content: {
       flexGrow: 1,
       backgroundColor: theme.palette.background.default

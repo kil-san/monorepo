@@ -8,24 +8,24 @@ import {
 
 interface IDatePicker {
   selectedDate?: string
-  setSelectedDate?: Function
+  setSelectedDate: Function
 }
 
 const DatePicker = ({ selectedDate, setSelectedDate }: IDatePicker) => {
   
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label="Date picker dialog"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={() => setSelectedDate && setSelectedDate()}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
+      <KeyboardDatePicker
+        margin="normal"
+        id="date-picker-dialog"
+        label="Date picker dialog"
+        format="MM/dd/yyyy"
+        value={selectedDate}
+        onChange={date => setSelectedDate(date)}
+        KeyboardButtonProps={{
+          'aria-label': 'change date',
+        }}
+      />
     </MuiPickersUtilsProvider>
   )
 }

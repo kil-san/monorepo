@@ -49,7 +49,7 @@ func (r MongoRepo) Create(ctx context.Context, data model.Note) (model.Note, err
 		return note, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	_, err = collection.InsertOne(ctx, doc)
 	if err != nil {
@@ -64,7 +64,7 @@ func (r MongoRepo) Get(ctx context.Context, id string) (model.Note, error) {
 	collection := r.getCollectionRef()
 
 	filter := bson.D{{"id", id}}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	err := collection.FindOne(ctx, filter).Decode(&note)
@@ -85,7 +85,7 @@ func (r MongoRepo) Delete(ctx context.Context, id string) error {
 		CaseLevel: false,
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	_, err := collection.DeleteOne(ctx, bson.D{{"id", id}}, opts)
 	if err != nil {
@@ -106,7 +106,7 @@ func (r MongoRepo) Update(ctx context.Context, id string, data model.Note) error
 
 	filter := bson.D{{"id", id}}
 	update := bson.D{{"$set", doc}}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	result, err := collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
@@ -118,4 +118,38 @@ func (r MongoRepo) Update(ctx context.Context, id string, data model.Note) error
 	}
 
 	return nil
+}
+
+func (r MongoRepo) List(ctx context.Context) ([]model.Note, error) {
+	var notes []model.Note
+	collection := r.getCollectionRef()
+
+	findOptions := options.Find()
+	findOptions.SetLimit(10)
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	cur, err := collection.Find(ctx, bson.D{}, findOptions)
+	if err != nil {
+		return notes, err
+	}
+
+	for cur.Next(context.TODO()) {
+		var note model.Note
+		err := cur.Decode(&note)
+		if err != nil {
+			return notes, err
+		}
+
+		notes = append(notes, note)
+	}
+
+	if err := cur.Err(); err != nil {
+		return notes, err
+	}
+
+	cur.Close(context.TODO())
+
+	return notes, nil
 }

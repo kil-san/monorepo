@@ -13,7 +13,8 @@ const Form = () => {
   const classes = useStyles()
   const { addNote } = useContext(NoteContext)
 
-  const handleDateChange = (date: Date) => {
+  const handleDateChange = (date: any) => {
+    console.log(date)
     setSelectedDate(date.toDateString())
   }
 

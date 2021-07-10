@@ -3,7 +3,7 @@
 # https://gqlgen.com/getting-started/
 
 type Query {
-  getNotes: [Note!]!
+  getNotes(data: String!): [Note!]!
   getNote(data: String!): Note!
 }
 
@@ -16,15 +16,16 @@ type Mutation {
 type Note {
   id: String!
   title: String!
-  status: String!
+  content: String!
 }
 
 input NoteUpdate {
   id: String!
   title: String!
-  status: String!
+  content: String!
 }
 
 input NewNote {
   title: String!
+  content: String!
 }

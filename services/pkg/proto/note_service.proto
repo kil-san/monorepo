@@ -26,7 +26,8 @@ message NoteList {
 }
 
 message Note {
-    string id = 1;
-	string title = 2;
-	string status = 3;
+    string user_id = 1;
+    string id = 2;
+	string title = 3;
+	string content = 4;
 }

@@ -11,4 +11,5 @@ type Repo interface {
 	Get(ctx context.Context, id string) (model.Note, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, id string, data model.Note) error
+	List(ctx context.Context) ([]model.Note, error)
 }

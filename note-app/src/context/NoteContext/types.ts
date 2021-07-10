@@ -1,11 +1,12 @@
 export type Note = {
   id?: string
   title?: string
-  status?: string
+  content?: string
 }
 
 export interface INoteContext {
   notes: Array<Note>
+  currentNote?: Note
   addNote: (note: Note)=> void
   setNotes: (notes: Array<Note>) => void
 }

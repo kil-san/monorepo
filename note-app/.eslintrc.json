@@ -25,5 +25,8 @@
       2,
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     ]
+  },
+  "globals": {
+    "process": true
   }
 }

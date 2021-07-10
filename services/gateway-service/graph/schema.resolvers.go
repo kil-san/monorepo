@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kil-san/micro-serv/gateway-service/graph/generated"
@@ -80,8 +79,26 @@ func (r *mutationResolver) DeleteNote(ctx context.Context, data string) (bool, e
 	return true, nil
 }
 
-func (r *queryResolver) GetNotes(ctx context.Context) ([]*model.Note, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) GetNotes(ctx context.Context, data string) ([]*model.Note, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*20)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, service.NoteRPCEndpoint, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal("Failed to dial server:", err)
+	}
+
+	defer conn.Close()
+	client := pb.NewNoteRPCClient(conn)
+	svc := service.NewNoteService(client)
+	var notes []*model.Note
+	notes, err = svc.GetNotes(ctx, data)
+	if err != nil {
+		log.Error("%+v\n", err)
+		return notes, err
+	}
+
+	return notes, nil
 }
 
 func (r *queryResolver) GetNote(ctx context.Context, data string) (*model.Note, error) {

@@ -17,7 +17,7 @@ func main() {
 		panic("unable to create new logger: " + err.Error())
 	}
 
-	addr := fmt.Sprintf("0.0.0.0:%d", 8008)
+	addr := fmt.Sprintf("0.0.0.0:%d", 443)
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatal("Failed to listen: %+v", err)

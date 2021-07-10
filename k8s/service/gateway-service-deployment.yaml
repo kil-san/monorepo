@@ -27,4 +27,17 @@ spec:
           name: gateway-service
           env:
             - name: NOTE_SERVICE_ENDPOINT
-              value: note-service:8008
+              value: note-service:443
+            - name: ALLOWED_ORIGIN
+              value: http://localhost:3000
+            - name: GOOGLE_PROJECT_ID
+              valueFrom: 
+                configMapKeyRef:
+                  name: gcp-app-env
+                  key: GOOGLE_PROJECT_ID
+            - name: FIREBASE_ACCESS_TOKEN
+              valueFrom: 
+                configMapKeyRef:
+                  name: gcp-app-env
+                  key: FIREBASE_ACCESS_TOKEN
+
