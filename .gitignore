@@ -4,3 +4,5 @@ tilt_modules
 *pb.go
 bazel**
 credentials/*.json
+k8s/config-map/dev.yaml
+firebase_data/export

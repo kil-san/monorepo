@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: firebase-emulator
+spec:
+  ports:
+  - port: 4000
+    name: web-ui
+  - port: 8080
+    name: firestore
+  - port: 8081
+    name: auth
+  selector:
+    app: firebase-emulator
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firebase-emulator
+spec:
+  selector:
+    matchLabels:
+      app: firebase-emulator
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: firebase-emulator
+    spec:
+      containers:
+        - image: firebase-emulator
+          name: firebase-image
+          command: ["firebase"]
+          args: ["emulators:start", "--only", "firestore,auth", "--import=firebase_data/export", "--token", "$(FIREBASE_ACCESS_TOKEN)", "--project", "$(GOOGLE_PROJECT_ID)", "--export-on-exit"]
+          env:
+            - name: GOOGLE_PROJECT_ID
+              valueFrom: 
+                configMapKeyRef:
+                  name: gcp-app-env
+                  key: GOOGLE_PROJECT_ID
+            - name: FIREBASE_ACCESS_TOKEN
+              valueFrom: 
+                configMapKeyRef:
+                  name: dev-env
+                  key: FIREBASE_ACCESS_TOKEN
+          volumeMounts:
+          - mountPath: /srv/app/firebase_data
+            name: firebase-emulator-data-volume
+          - mountPath: /srv/app/firebase.json
+            name: firebase-emulator-json-volume
+          - mountPath: /srv/app/firestore.rules
+            name: firebase-emulator-rules-volume
+      volumes:
+        - name: firebase-emulator-data-volume
+          hostPath:
+            path: <repoRoot>/firebase_data
+            type: Directory
+        - name: firebase-emulator-json-volume
+          hostPath:
+            path: <repoRoot>/firebase.json
+            type: File
+        - name: firebase-emulator-rules-volume
+          hostPath:
+            path: <repoRoot>/firestore.rules
+            type: File

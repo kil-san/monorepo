@@ -3,6 +3,9 @@ load('ext://helm_remote', 'helm_remote')
 
 default_registry('localhost:56406')
 
+k8s_yaml('k8s/config-map/env.yaml')
+k8s_yaml('k8s/config-map/dev.yaml')
+
 # k8s_yaml('k8s/mysql-deployment.yaml')
 # helm_remote('phpmyadmin',
 #   repo_name="bitnami",
@@ -32,6 +35,15 @@ k8s_resource(
   'dev-release-mongodb',
   new_name='run side: mongoDB',
   port_forwards='27000:27017',
+)
+
+# Firebase emulator
+compiledFirebaseEmulatorYaml = local('./formatDeploymentYaml.sh k8s/firebase-emulator.yaml')
+k8s_yaml(compiledFirebaseEmulatorYaml)
+docker_build('firebase-emulator', './firebase-emulator')
+k8s_resource('firebase-emulator',
+  new_name='run svc: firebase-emulator',
+  port_forwards=['4000:4000', '8080:8080', '9099:9099'],
 )
 
 for service in [
@@ -82,3 +94,16 @@ local_resource(
   cmd='cd services/gateway-service && go run github.com/99designs/gqlgen',
   deps=['services/**/*.graphqls'],
 )
+
+local_resource(
+  'build: export firebase',
+  serve_cmd='./hack/firebase_export.sh',
+  allow_parallel=True,
+  deps=[
+    'hack/firebase_export.sh',
+  ],
+  resource_deps=[
+    'run svc: firebase-emulator',
+  ],
+)
+
