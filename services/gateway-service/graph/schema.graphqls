@@ -3,7 +3,7 @@
 # https://gqlgen.com/getting-started/
 
 type Query {
-  getNotes(data: String!): [Note!]!
+  getNotes(data: Int!): [Note!]!
   getNote(data: String!): Note!
 }
 

@@ -28,7 +28,7 @@ func (r *mutationResolver) CreateNote(ctx context.Context, data model.NewNote) (
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
 	var note model.Note
-	note, err = svc.CreateNote(ctx, data)
+	note, err = svc.CreateNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
 		return &note, err
@@ -49,7 +49,7 @@ func (r *mutationResolver) UpdateNote(ctx context.Context, data model.NoteUpdate
 	defer conn.Close()
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
-	err = svc.UpdateNote(ctx, data)
+	err = svc.UpdateNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
 		return false, err
@@ -70,7 +70,7 @@ func (r *mutationResolver) DeleteNote(ctx context.Context, data string) (bool, e
 	defer conn.Close()
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
-	err = svc.DeleteNote(ctx, data)
+	err = svc.DeleteNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
 		return false, err
@@ -79,7 +79,7 @@ func (r *mutationResolver) DeleteNote(ctx context.Context, data string) (bool, e
 	return true, nil
 }
 
-func (r *queryResolver) GetNotes(ctx context.Context, data string) ([]*model.Note, error) {
+func (r *queryResolver) GetNotes(ctx context.Context, data int) ([]*model.Note, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*20)
 	defer cancel()
 
@@ -92,7 +92,7 @@ func (r *queryResolver) GetNotes(ctx context.Context, data string) ([]*model.Not
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
 	var notes []*model.Note
-	notes, err = svc.GetNotes(ctx, data)
+	notes, err = svc.GetNotes(ctx, "default", uint32(data))
 	if err != nil {
 		log.Error("%+v\n", err)
 		return notes, err
@@ -114,7 +114,7 @@ func (r *queryResolver) GetNote(ctx context.Context, data string) (*model.Note, 
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
 	var note model.Note
-	note, err = svc.GetNote(ctx, data)
+	note, err = svc.GetNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
 		return &note, err

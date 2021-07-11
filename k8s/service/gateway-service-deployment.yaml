@@ -28,14 +28,10 @@ spec:
               value: note-service:443
             - name: ALLOWED_ORIGIN
               value: http://localhost:3000
-            - name: GOOGLE_PROJECT_ID
-              valueFrom: 
-                configMapKeyRef:
-                  name: gcp-app-env
-                  key: GOOGLE_PROJECT_ID
-            - name: FIREBASE_ACCESS_TOKEN
-              valueFrom: 
-                configMapKeyRef:
-                  name: dev-env
-                  key: FIREBASE_ACCESS_TOKEN
+          envFrom:
+            - configMapRef:
+                name: gcp-app-env
+            - configMapRef:
+                name: dev-env
+
 

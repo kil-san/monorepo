@@ -57,7 +57,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		GetNote  func(childComplexity int, data string) int
-		GetNotes func(childComplexity int, data string) int
+		GetNotes func(childComplexity int, data int) int
 	}
 }
 
@@ -67,7 +67,7 @@ type MutationResolver interface {
 	DeleteNote(ctx context.Context, data string) (bool, error)
 }
 type QueryResolver interface {
-	GetNotes(ctx context.Context, data string) ([]*model.Note, error)
+	GetNotes(ctx context.Context, data int) ([]*model.Note, error)
 	GetNote(ctx context.Context, data string) (*model.Note, error)
 }
 
@@ -165,7 +165,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetNotes(childComplexity, args["data"].(string)), true
+		return e.complexity.Query.GetNotes(childComplexity, args["data"].(int)), true
 
 	}
 	return 0, false
@@ -236,7 +236,7 @@ var sources = []*ast.Source{
 # https://gqlgen.com/getting-started/
 
 type Query {
-  getNotes(data: String!): [Note!]!
+  getNotes(data: Int!): [Note!]!
   getNote(data: String!): Note!
 }
 
@@ -348,10 +348,10 @@ func (ec *executionContext) field_Query_getNote_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Query_getNotes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int
 	if tmp, ok := rawArgs["data"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -654,7 +654,7 @@ func (ec *executionContext) _Query_getNotes(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetNotes(rctx, args["data"].(string))
+		return ec.resolvers.Query().GetNotes(rctx, args["data"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2331,6 +2331,21 @@ func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interf
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
 	res := graphql.MarshalBoolean(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

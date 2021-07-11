@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
+        "firebase_repo.go",
         "mongo_repo.go",
         "repo.go",
     ],
@@ -10,7 +11,10 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//services/pkg/model:go_default_library",
-        "@dev_unknwon_clog_v2//:go_default_library",
+        "@com_google_cloud_go_firestore//:go_default_library",
+        "@org_golang_google_api//iterator:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
         "@org_mongodb_go_mongo_driver//bson:go_default_library",
         "@org_mongodb_go_mongo_driver//mongo:go_default_library",
         "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",

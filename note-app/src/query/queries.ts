@@ -40,8 +40,8 @@ export const UpdateNote = gql`
 `
 
 export const GetNotes = gql`
-  query GetNotes {
-    getNotes {
+  query GetNotes($page: Int!) {
+    getNotes(data: $page) {
       id
       title
       content

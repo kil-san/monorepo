@@ -12,15 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type MongoRepo struct {
+type mongoRepo struct {
 	client *mongo.Client
 }
 
 var Database = os.Getenv("DATABASE")
 var NoteCollection = "notes"
 
-func NewMongoRepo(client *mongo.Client) MongoRepo {
-	return MongoRepo{
+func NewMongoRepo(client *mongo.Client) Repo {
+	return &mongoRepo{
 		client: client,
 	}
 }
@@ -35,35 +35,37 @@ func toDoc(v interface{}) (doc *bson.D, err error) {
 	return
 }
 
-func (r MongoRepo) getCollectionRef() *mongo.Collection {
+func (r *mongoRepo) getCollectionRef() *mongo.Collection {
 	collection := r.client.Database(Database).Collection(NoteCollection)
 	return collection
 }
 
-func (r MongoRepo) Create(ctx context.Context, data model.Note) (model.Note, error) {
-	var note model.Note
+func (r *mongoRepo) Create(ctx context.Context, ownerUid string, data model.Note) error {
 	collection := r.getCollectionRef()
 
 	doc, err := toDoc(data)
 	if err != nil {
-		return note, err
+		return err
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	_, err = collection.InsertOne(ctx, doc)
 	if err != nil {
-		return note, err
+		return err
 	}
 
-	return data, nil
+	return nil
 }
 
-func (r MongoRepo) Get(ctx context.Context, id string) (model.Note, error) {
+func (r *mongoRepo) Get(ctx context.Context, ownerUid string, noteID string) (model.Note, error) {
 	var note model.Note
 	collection := r.getCollectionRef()
 
-	filter := bson.D{{"id", id}}
+	filter := bson.D{
+		{"id", noteID},
+		{"ownerUid", ownerUid},
+	}
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -77,7 +79,7 @@ func (r MongoRepo) Get(ctx context.Context, id string) (model.Note, error) {
 	return note, nil
 }
 
-func (r MongoRepo) Delete(ctx context.Context, id string) error {
+func (r *mongoRepo) Delete(ctx context.Context, ownerUid string, noteID string) error {
 	collection := r.getCollectionRef()
 	opts := options.Delete().SetCollation(&options.Collation{
 		Locale:    "en_US",
@@ -85,9 +87,14 @@ func (r MongoRepo) Delete(ctx context.Context, id string) error {
 		CaseLevel: false,
 	})
 
+	filter := bson.D{
+		{"id", noteID},
+		{"ownerUid", ownerUid},
+	}
+
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	_, err := collection.DeleteOne(ctx, bson.D{{"id", id}}, opts)
+	_, err := collection.DeleteOne(ctx, filter, opts)
 	if err != nil {
 		return err
 	}
@@ -95,7 +102,7 @@ func (r MongoRepo) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r MongoRepo) Update(ctx context.Context, id string, data model.Note) error {
+func (r *mongoRepo) Update(ctx context.Context, ownerUid string, data model.Note) error {
 	collection := r.getCollectionRef()
 	opts := options.Update().SetUpsert(false)
 
@@ -104,7 +111,11 @@ func (r MongoRepo) Update(ctx context.Context, id string, data model.Note) error
 		return err
 	}
 
-	filter := bson.D{{"id", id}}
+	filter := bson.D{
+		{"id", data.Id},
+		{"ownerUid", ownerUid},
+	}
+
 	update := bson.D{{"$set", doc}}
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -120,7 +131,7 @@ func (r MongoRepo) Update(ctx context.Context, id string, data model.Note) error
 	return nil
 }
 
-func (r MongoRepo) List(ctx context.Context) ([]model.Note, error) {
+func (r *mongoRepo) List(ctx context.Context, ownerUid string, page uint32) ([]model.Note, error) {
 	var notes []model.Note
 	collection := r.getCollectionRef()
 

@@ -5,20 +5,21 @@ option go_package = "github.com/kil-san/micro-serv/note-service/pb";
 import "google/protobuf/empty.proto";
 
 service NoteRPC {
-    rpc CreateNote (Note) returns (Note);
-    rpc GetNotes (OwnerUid) returns (NoteList);
-    rpc GetNote (SingleNote) returns (Note);
-    rpc UpdateNote (Note) returns (google.protobuf.Empty);
-    rpc DeleteNote (SingleNote) returns (google.protobuf.Empty);
+    rpc CreateNote (CreateNoteRequest) returns (Note);
+    rpc GetNotes (GetNotesRequest) returns (NoteList);
+    rpc GetNote (SimpleRequest) returns (Note);
+    rpc UpdateNote (CreateNoteRequest) returns (google.protobuf.Empty);
+    rpc DeleteNote (SimpleRequest) returns (google.protobuf.Empty);
 }
 
-message OwnerUid {
-    string user_id = 1;
-}
-
-message SingleNote {
-    string user_id = 1;
+message SimpleRequest {
+    string owner_uid = 1;
     string note_id = 2;
+}
+
+message CreateNoteRequest {
+    string owner_uid = 1;
+    Note note = 2;
 }
 
 message NoteList {
@@ -26,8 +27,12 @@ message NoteList {
 }
 
 message Note {
-    string user_id = 1;
     string id = 2;
 	string title = 3;
 	string content = 4;
+}
+
+message GetNotesRequest {
+    string owner_uid = 1;
+    int32 page = 2;
 }
