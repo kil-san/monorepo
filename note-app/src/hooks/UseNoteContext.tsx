@@ -12,12 +12,12 @@ const UseNoteContext: React.FC<IUseNoteContext> = ({
     children
 }) => {
   const [notes, setNotes] = useState<Array<Note>>([])
-  const { data: getNotesData, error: getNotesError } = useQuery(GetNotes{
+  const [ createNote, createNoteMutation ] = useMutation(CreateNote)
+  const { data: getNotesData, error: getNotesError } = useQuery(GetNotes, {
     variables: {
-      data: 1
+      page: 1
     }
   })
-  const [ createNote, createNoteMutation ] = useMutation(CreateNote)
 
   useEffect(() => {
     if (getNotesError) {

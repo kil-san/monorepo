@@ -69,6 +69,12 @@ for service, port, deps in [
     resource_deps=deps
   )
 
+# Run note app
+local_resource(
+  'run: note app',
+  serve_cmd='cd note-app && yarn start'
+)
+
 local_resource(
   'build: buf',
   cmd='./protoc_gen.sh',

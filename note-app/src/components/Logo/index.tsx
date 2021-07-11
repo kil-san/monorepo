@@ -1,7 +1,7 @@
 import React from 'react'
 import useStyles from './style'
 //import LogoImage from 'res/Logo/logo.svg.js'
-import LogoImage from 'res/Logo/artey.png'
+import LogoImage from 'res/Logo/logo.svg'
 
 interface ILogo {
   className?: string

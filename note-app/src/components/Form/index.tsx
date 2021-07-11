@@ -8,6 +8,7 @@ import { NoteContext } from 'context/NoteContext';
 const Form = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString())
   const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
   const [errorText, setErrorText] = useState(false)
   const history = useHistory()
   const classes = useStyles()
@@ -25,13 +26,20 @@ const Form = () => {
     setTitle(event.target.value)
   }
 
+  const handleContentChange = (event: any) => {
+    if (event.target.value.length > 0) {
+      setErrorText(false)
+    }
+    setContent(event.target.value)
+  }
+
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    if (title !== '') {
+    if (title !== '' && content !== '') {
       addNote({
-        title: title
+        title: title,
+        content: content
       })
-      //history.push('/note')
     }
     else setErrorText(true)
   }
@@ -57,7 +65,6 @@ const Form = () => {
               id="outlined-textarea"
               label="Title"
               placeholder="Title"
-              multiline
               variant="outlined"
               className={classes.form_text}
               value={title}
@@ -65,6 +72,20 @@ const Form = () => {
               required
               error={errorText}
               helperText="Title is required"
+            />
+            <TextField
+              id="outlined-textarea"
+              label="Content"
+              placeholder="Content"
+              multiline
+              rows={5}
+              variant="outlined"
+              className={classes.form_text}
+              value={content}
+              onChange={handleContentChange}
+              required
+              error={errorText}
+              helperText="Content is required"
             />
             <Button 
               className={classes.submit} 
