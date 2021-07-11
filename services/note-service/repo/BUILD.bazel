@@ -4,7 +4,6 @@ go_library(
     name = "go_default_library",
     srcs = [
         "firebase_repo.go",
-        "mongo_repo.go",
         "repo.go",
     ],
     importpath = "github.com/kil-san/micro-serv/note-service/repo",
@@ -15,8 +14,5 @@ go_library(
         "@org_golang_google_api//iterator:go_default_library",
         "@org_golang_google_grpc//codes:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",
-        "@org_mongodb_go_mongo_driver//bson:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
     ],
 )

@@ -4,7 +4,6 @@ go_library(
     name = "go_default_library",
     srcs = [
         "firebase_connection.go",
-        "mongo_conn.go",
         "sqldb_connection.go",
     ],
     importpath = "github.com/kil-san/micro-serv/note-service/connection",
@@ -15,8 +14,5 @@ go_library(
         "@com_google_cloud_go_firestore//:go_default_library",
         "@com_google_firebase_go//:go_default_library",
         "@dev_unknwon_clog_v2//:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo/readpref:go_default_library",
     ],
 )
