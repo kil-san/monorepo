@@ -27,14 +27,14 @@ func (r *mutationResolver) CreateNote(ctx context.Context, data model.NewNote) (
 	defer conn.Close()
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
-	var note model.Note
+	var note *model.Note
 	note, err = svc.CreateNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
-		return &note, err
+		return note, err
 	}
 
-	return &note, nil
+	return note, nil
 }
 
 func (r *mutationResolver) UpdateNote(ctx context.Context, data model.NoteUpdate) (bool, error) {
@@ -113,14 +113,14 @@ func (r *queryResolver) GetNote(ctx context.Context, data string) (*model.Note, 
 	defer conn.Close()
 	client := pb.NewNoteRPCClient(conn)
 	svc := service.NewNoteService(client)
-	var note model.Note
+	var note *model.Note
 	note, err = svc.GetNote(ctx, "default", data)
 	if err != nil {
 		log.Error("%+v\n", err)
-		return &note, err
+		return note, err
 	}
 
-	return &note, nil
+	return note, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

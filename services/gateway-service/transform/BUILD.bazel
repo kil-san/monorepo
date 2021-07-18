@@ -2,12 +2,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["note_service.go"],
-    importpath = "github.com/kil-san/micro-serv/gateway-service/service",
+    srcs = ["note_transformer.go"],
+    importpath = "github.com/kil-san/micro-serv/gateway-service/transform",
     visibility = ["//visibility:public"],
     deps = [
         "//services/gateway-service/graph/model:go_default_library",
-        "//services/gateway-service/transform:go_default_library",
         "//services/note-service/pb:go_default_library",
     ],
 )

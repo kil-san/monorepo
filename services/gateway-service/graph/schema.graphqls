@@ -17,15 +17,28 @@ type Note {
   id: String!
   title: String!
   content: String!
+  checklist: [CheckListItem]
 }
 
 input NoteUpdate {
   id: String!
   title: String!
   content: String!
+  checklist: [CheckListItemInput]
 }
 
 input NewNote {
   title: String!
   content: String!
+  checklist: [CheckListItemInput]
+}
+
+input CheckListItemInput {
+  title: String!
+  state: Boolean!
+}
+
+type CheckListItem {
+  title: String!
+  state: Boolean!
 }

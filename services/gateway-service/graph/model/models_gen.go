@@ -2,19 +2,32 @@
 
 package model
 
+type CheckListItem struct {
+	Title string `json:"title"`
+	State bool   `json:"state"`
+}
+
+type CheckListItemInput struct {
+	Title string `json:"title"`
+	State bool   `json:"state"`
+}
+
 type NewNote struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title     string                `json:"title"`
+	Content   string                `json:"content"`
+	Checklist []*CheckListItemInput `json:"checklist"`
 }
 
 type Note struct {
-	ID      string `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	ID        string           `json:"id"`
+	Title     string           `json:"title"`
+	Content   string           `json:"content"`
+	Checklist []*CheckListItem `json:"checklist"`
 }
 
 type NoteUpdate struct {
-	ID      string `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	ID        string                `json:"id"`
+	Title     string                `json:"title"`
+	Content   string                `json:"content"`
+	Checklist []*CheckListItemInput `json:"checklist"`
 }
