@@ -5,7 +5,7 @@ This project makes use of [Tilt](https://tilt.dev/) and the lightweight [k3s](ht
 
 ## Dev Setup
 
-This guide assumes that the machine is already setup with golang and node
+This guide assumes that the machine is already setup with golang, node and yarn
 
 - Install [docker](https://docs.docker.com/get-docker) on your machine if you don't already have it
 - Install [k3d](https://k3d.io/#installation) on your machine depending on your operating system
