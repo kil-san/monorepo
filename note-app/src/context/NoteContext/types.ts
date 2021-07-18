@@ -7,6 +7,7 @@ export type Note = {
 export interface INoteContext {
   notes: Array<Note>
   currentNote?: Note
-  addNote: (note: Note)=> void
+  addNote: (note: Note) => void
   setNotes: (notes: Array<Note>) => void
+  setCurrentNote: (note: Note) => void
 }

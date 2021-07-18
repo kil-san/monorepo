@@ -4,7 +4,8 @@ import { INoteContext, Note } from './types'
 const DefaultNoteContext: INoteContext = {
   notes: [],
   addNote: (note: Note): void => {},
-  setNotes: (notes: Array<Note>): void => {}
+  setNotes: (notes: Array<Note>): void => {},
+  setCurrentNote: (note: Note): void => {}
 }
 
 const NoteContext = React.createContext(DefaultNoteContext)

@@ -2,13 +2,20 @@ import React, { useContext } from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText}  from '@material-ui/core';
 import { MoveToInbox as InboxIcon, Mail as MailIcon }  from '@material-ui/icons';
 import useStyles from './style';
-import { NoteContext } from 'context'
+import { NoteContext, Note } from 'context'
+import { useHistory } from 'react-router-dom'
 
 const drawerWidth = 240;
 
 const NoteList: React.FC<any> = ({ children }) => {
   const classes = useStyles({ drawerWidth });
-  const { notes } = useContext(NoteContext)
+  const { notes, setCurrentNote } = useContext(NoteContext)
+  const history = useHistory()
+
+  const selectNote = (note: Note) => {
+    setCurrentNote(note)
+    history.push('/note')
+  }
 
   return (
     <div className={classes.root}>
@@ -23,7 +30,7 @@ const NoteList: React.FC<any> = ({ children }) => {
         <div className={classes.toolbar} />
         <List>
           {notes.map((note, index) => (
-            <ListItem button key={note.title}>
+            <ListItem button key={note.title} onClick={() => selectNote(note)}>
               <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
               <ListItemText primary={note.title} />
             </ListItem>

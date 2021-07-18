@@ -15,10 +15,10 @@ const Footer = () => {
             <Logo className={classes.logo} iconColor='black' />
           </div>
           <Typography className={classes.copyright} paragraph>
-            Copyright &copy; {new Date().getUTCFullYear()} Artey
+            Copyright &copy; {new Date().getUTCFullYear()} Notte
           </Typography>
           <Typography className={classes.copyright} paragraph>
-          support@artey.io
+          support@notte.io
           </Typography>
           <Typography className={classes.content} paragraph>
             <Link className={classes.link} to='/terms'>
