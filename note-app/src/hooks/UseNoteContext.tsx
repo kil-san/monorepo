@@ -28,6 +28,10 @@ const UseNoteContext: React.FC<IUseNoteContext> = ({
     if (getNotesData) {
       setNotes(getNotesData.getNotes)
     }
+
+    if (!currentNote && getNotesData.getNotes.length > 0) {
+      setCurrentNote(getNotesData.getNotes[0])
+    }
   }, [getNotesData, getNotesError])
 
   useEffect(() => {
@@ -54,8 +58,11 @@ const UseNoteContext: React.FC<IUseNoteContext> = ({
     ])
     createNote({
       variables: {
-        title: note.title,
-        content: note.content
+        data: {
+          title: note.title,
+          content: note.content,
+          checklist: note.checklist
+        }
       }
     })
   }

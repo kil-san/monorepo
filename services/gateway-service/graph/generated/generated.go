@@ -44,6 +44,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	CheckListItem struct {
+		Index func(childComplexity int) int
 		State func(childComplexity int) int
 		Title func(childComplexity int) int
 	}
@@ -91,6 +92,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CheckListItem.index":
+		if e.complexity.CheckListItem.Index == nil {
+			break
+		}
+
+		return e.complexity.CheckListItem.Index(childComplexity), true
 
 	case "CheckListItem.state":
 		if e.complexity.CheckListItem.State == nil {
@@ -294,11 +302,13 @@ input NewNote {
 }
 
 input CheckListItemInput {
+  index: Int!
   title: String!
   state: Boolean!
 }
 
 type CheckListItem {
+  index: Int!
   title: String!
   state: Boolean!
 }
@@ -437,6 +447,41 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _CheckListItem_index(ctx context.Context, field graphql.CollectedField, obj *model.CheckListItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CheckListItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Index, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _CheckListItem_title(ctx context.Context, field graphql.CollectedField, obj *model.CheckListItem) (ret graphql.Marshaler) {
 	defer func() {
@@ -2019,6 +2064,14 @@ func (ec *executionContext) unmarshalInputCheckListItemInput(ctx context.Context
 
 	for k, v := range asMap {
 		switch k {
+		case "index":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("index"))
+			it.Index, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "title":
 			var err error
 
@@ -2140,6 +2193,11 @@ func (ec *executionContext) _CheckListItem(ctx context.Context, sel ast.Selectio
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CheckListItem")
+		case "index":
+			out.Values[i] = ec._CheckListItem_index(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "title":
 			out.Values[i] = ec._CheckListItem_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

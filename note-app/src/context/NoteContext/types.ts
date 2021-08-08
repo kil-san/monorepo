@@ -1,13 +1,20 @@
+export type CheckItem = {
+  index: number
+  state: boolean
+  title: string
+}
+
 export type Note = {
   id?: string
   title?: string
   content?: string
+  checklist?: CheckItem[]
 }
 
 export interface INoteContext {
-  notes: Array<Note>
+  notes: Note[]
   currentNote?: Note
   addNote: (note: Note) => void
-  setNotes: (notes: Array<Note>) => void
+  setNotes: (notes: Note[]) => void
   setCurrentNote: (note: Note) => void
 }

@@ -6,19 +6,24 @@ export const GetNote = gql`
       id
       title
       content
+      checklist{
+        title
+        state
+      }
     }
   }
 `
 
 export const CreateNote = gql`
-  mutation CreateNote($title: String!, $content: String!) {
-    createNote(data: {
-      title: $title
-      content: $content
-    }){
+  mutation CreateNote($data: NewNote!) {
+    createNote(data: $data){
       id
       title
       content
+      checklist{
+        title
+        state
+      }
     }
   }
 `
@@ -30,12 +35,8 @@ export const DeleteNote = gql`
 `
 
 export const UpdateNote = gql`
-  mutation UpdateNote($id: String!, $title: String!, $content: String) {
-    updateNote(data: {
-      id: $id
-      title: $title
-      content: $content
-    })
+  mutation UpdateNote($data: NoteUpdate!) {
+    updateNote(data: $data)
   }
 `
 
@@ -45,6 +46,10 @@ export const GetNotes = gql`
       id
       title
       content
+      checklist{
+        title
+        state
+      }
     }
   }
 `

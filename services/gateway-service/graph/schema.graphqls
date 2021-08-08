@@ -34,11 +34,13 @@ input NewNote {
 }
 
 input CheckListItemInput {
+  index: Int!
   title: String!
   state: Boolean!
 }
 
 type CheckListItem {
+  index: Int!
   title: String!
   state: Boolean!
 }

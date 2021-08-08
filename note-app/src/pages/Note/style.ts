@@ -37,6 +37,13 @@ const useStyles = makeStyles((theme: AppTheme) =>
       display: 'block',
       marginTop: '2em',
       minWidth: 120
+    },
+    check_list: {
+      display: 'flex',
+      margin: '2em 0em'
+    },
+    body_text: {
+      margin: '2em .5em'
     }
   })
 )

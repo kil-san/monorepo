@@ -3,11 +3,13 @@
 package model
 
 type CheckListItem struct {
+	Index int    `json:"index"`
 	Title string `json:"title"`
 	State bool   `json:"state"`
 }
 
 type CheckListItemInput struct {
+	Index int    `json:"index"`
 	Title string `json:"title"`
 	State bool   `json:"state"`
 }

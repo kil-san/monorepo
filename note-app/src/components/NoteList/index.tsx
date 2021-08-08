@@ -30,7 +30,7 @@ const NoteList: React.FC<any> = ({ children }) => {
         <div className={classes.toolbar} />
         <List>
           {notes.map((note, index) => (
-            <ListItem button key={note.title} onClick={() => selectNote(note)}>
+            <ListItem button key={note.id} onClick={() => selectNote(note)}>
               <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
               <ListItemText primary={note.title} />
             </ListItem>

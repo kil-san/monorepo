@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import useStyles from './style'
-import { Grid, Paper, Typography } from '@material-ui/core'
+import { Grid, Paper, Typography, Checkbox, TextField, FormControlLabel } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons';
 import { Container, HeaderBar, NoteList } from 'components'
 import { NoteContext } from 'context/NoteContext';
@@ -41,10 +41,22 @@ const Note = () => {
                     <Typography 
                       variant="body1" 
                       gutterBottom
-                      className={''}
+                      className={classes.body_text}
                     >
                       {note?.content}
                     </Typography>
+                  </div>
+                  <div>
+                    {note?.checklist?.map((item, index) => {
+                      return (
+                        <div key={index}>
+                          <FormControlLabel 
+                            control={<Checkbox defaultChecked={item.state} disabled />}
+                            label={item.title}
+                          />
+                        </div>
+                      )
+                    })}
                   </div>
                 </Paper>
               </Grid>

@@ -1,9 +1,11 @@
-import React, { useState, useContext } from 'react' // eslint-disable-line
+import React, { useState, useContext, useEffect } from 'react' // eslint-disable-line
 import { useHistory } from 'react-router-dom';
-import { Button, Grid, TextField, Paper, Typography } from '@material-ui/core'
-import { DatePicker } from 'components'
+import { Button, Grid, TextField, Paper, Typography, IconButton } from '@material-ui/core'
+import { Add } from '@material-ui/icons'
+import { DatePicker, ChecklistInput } from 'components'
 import useStyles from './style'
 import { NoteContext } from 'context/NoteContext';
+import { CheckItem } from 'context'
 
 const Form = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString())
@@ -13,9 +15,9 @@ const Form = () => {
   const history = useHistory()
   const classes = useStyles()
   const { addNote } = useContext(NoteContext)
+  const [checklist, setChecklist] = useState<CheckItem[]>([])
 
   const handleDateChange = (date: any) => {
-    console.log(date)
     setSelectedDate(date.toDateString())
   }
 
@@ -38,10 +40,37 @@ const Form = () => {
     if (title !== '' && content !== '') {
       addNote({
         title: title,
-        content: content
+        content: content,
+        checklist: checklist
       })
     }
     else setErrorText(true)
+  }
+
+  const handleAddCheckInput = (event: any) => {
+    event.preventDefault()
+    const items = [...checklist]
+    items.push({
+      index: items.length,
+      state: false,
+      title: ''
+    })
+    setChecklist(items)
+  }
+
+  const handleCheckItemChange = (value: CheckItem) => {
+    const items = [...checklist]
+    const itemIndex = checklist.findIndex(x => x.index == value.index)
+    items[itemIndex] = value
+    setChecklist(items)
+  }
+
+  const handleDeleteCheckItem = (index: number) => {
+    const items = [...checklist]
+    const itemIndex = checklist.findIndex(x => x.index == index)
+    items.splice(itemIndex, 1)
+    console.log(itemIndex)
+    setChecklist(items)
   }
 
   return (
@@ -87,6 +116,22 @@ const Form = () => {
               error={errorText}
               helperText="Content is required"
             />
+            <div>
+              {checklist.map(checkItem => {
+                return (
+                  <ChecklistInput 
+                    value={checkItem} 
+                    key={checkItem.index} 
+                    deleteCheckItem={handleDeleteCheckItem}
+                    onChange={handleCheckItemChange}
+                  />
+                )
+              })}
+              Add Checklist Item 
+              <IconButton onClick={handleAddCheckInput}>
+                <Add/>
+              </IconButton>
+            </div>
             <Button 
               className={classes.submit} 
               variant="contained" 

@@ -15,6 +15,7 @@ func PbToNote(pbNote *pb.Note) *model.Note {
 	}
 
 	note := &model.Note{
+		ID:        pbNote.Id,
 		Title:     pbNote.Title,
 		Content:   pbNote.Content,
 		Checklist: checklist,
