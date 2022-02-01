@@ -1,15 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText}  from '@material-ui/core';
 import { MoveToInbox as InboxIcon, Mail as MailIcon }  from '@material-ui/icons';
 import useStyles from './style';
-import { NoteContext, Note } from 'context'
+import { Note } from 'context'
+import { useNoteContext } from 'hooks'
 import { useHistory } from 'react-router-dom'
 
 const drawerWidth = 240;
 
 const NoteList: React.FC<any> = ({ children }) => {
   const classes = useStyles({ drawerWidth });
-  const { notes, setCurrentNote } = useContext(NoteContext)
+  const { notes, setCurrentNote } = useNoteContext()
   const history = useHistory()
 
   const selectNote = (note: Note) => {

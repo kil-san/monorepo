@@ -7,7 +7,7 @@ interface IUseThemeContext {
   theme?: Theme
 }
 
-const UseThemeContext: React.FC<IUseThemeContext> = ({ theme: appTheme, children }) => {
+const Provider: React.FC<IUseThemeContext> = ({ theme: appTheme, children }) => {
   const [theme, setTheme] = useState(defaultTheme)
 
   useEffect(() => {
@@ -22,4 +22,4 @@ const UseThemeContext: React.FC<IUseThemeContext> = ({ theme: appTheme, children
   );
 }
 
-export default UseThemeContext
+export default Provider

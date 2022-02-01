@@ -1,2 +1,1 @@
-export { default as UseNoteContext } from './UseNoteContext'
-export { default as UseThemeContext } from './UseThemeContext'
+export { default as useNoteContext } from './useNoteContext'

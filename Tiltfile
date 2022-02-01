@@ -60,7 +60,7 @@ for service in [
 
 for service, port, deps in [
   ['gateway-service', '50001:8000', ['build: buf', 'build: graphql']],
-  ['note-service', '50002:443', ['build: buf', 'run side: firebase-emulator']]
+  ['note-service', '50002:443', ['build: buf']]
 ]:
   k8s_resource(
     service,

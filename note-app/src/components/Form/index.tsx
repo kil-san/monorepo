@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react' // eslint-disable-line
+import React, { useState } from 'react' // eslint-disable-line
 import { useHistory } from 'react-router-dom';
 import { Button, Grid, TextField, Paper, Typography, IconButton } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
 import { DatePicker, ChecklistInput } from 'components'
 import useStyles from './style'
-import { NoteContext } from 'context/NoteContext';
+import { useNoteContext } from 'hooks'
 import { CheckItem } from 'context'
 
 const Form = () => {
@@ -14,7 +14,7 @@ const Form = () => {
   const [errorText, setErrorText] = useState(false)
   const history = useHistory()
   const classes = useStyles()
-  const { addNote } = useContext(NoteContext)
+  const { addNote } = useNoteContext()
   const [checklist, setChecklist] = useState<CheckItem[]>([])
 
   const handleDateChange = (date: any) => {

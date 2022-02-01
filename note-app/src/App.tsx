@@ -2,17 +2,17 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import { Home, Note } from "pages";
-import { UseThemeContext } from "hooks";
+import { NoteContextProvider } from "context";
 import { initClient } from "query";
-import { UseNoteContext } from "hooks";
+import { ThemeProvider } from "theme";
 
 export default function App() {
   const graphQlClient = initClient();
 
   return (
     <ApolloProvider client={graphQlClient}>
-      <UseThemeContext>
-        <UseNoteContext>
+      <ThemeProvider>
+        <NoteContextProvider>
           <Router>
             <Switch>
               <Route exact path="/">
@@ -23,8 +23,8 @@ export default function App() {
               </Route>
             </Switch>
           </Router>
-        </UseNoteContext>
-      </UseThemeContext>
+        </NoteContextProvider>
+      </ThemeProvider>
     </ApolloProvider>
   );
 }
