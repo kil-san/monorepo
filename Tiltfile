@@ -1,7 +1,7 @@
 load('ext://restart_process', 'docker_build_with_restart')
 load('ext://helm_remote', 'helm_remote')
 
-default_registry('localhost:56406')
+default_registry('localhost:5432')
 
 k8s_yaml('k8s/config-map/env.yaml')
 k8s_yaml('k8s/config-map/dev.yaml')
